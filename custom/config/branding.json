@@ -1,0 +1,20 @@
+{
+  "site_name": "中转站名称",
+  "site_description": "稳定可靠的 AI API 服务",
+  "logo_path": "/brand/logo.svg",
+  "favicon_path": "/brand/favicon.ico",
+  "primary_color": "#1677ff",
+  "footer_text": "© 2026 你的公司. All rights reserved.",
+  "support_url": "https://your-support.xxxx.com",
+  "custom_pages": {
+    "about": "/about",
+    "pricing": "/pricing",
+    "terms": "/terms"
+  },
+  "features": {
+    "show_register": true,
+    "show_pricing": true,
+    "show_docs": true,
+    "enable_wechat_login": false
+  }
+}
