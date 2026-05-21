@@ -30,12 +30,23 @@ else
 fi
 
 echo ""
-echo "=== 4. 运行测试 ==="
+echo "=== 4. 重新应用自定义补丁（主题 link、品牌注入等）==="
+bash custom/scripts/apply-patches.sh
+
+echo ""
+echo "=== 5. 运行测试 ==="
 # go test ./...  # 取消注释以启用测试
 
 echo ""
-echo "=== 5. 推送 develop ==="
+echo "=== 6. 提交补丁更改（如有）==="
+if [ -n "$(git status --porcelain web/default/index.html web/default/public/custom-theme.css 2>/dev/null)" ]; then
+  git add web/default/index.html web/default/public/custom-theme.css
+  git commit -m "chore(custom): re-apply theme overlay patches after upstream merge"
+fi
+
+echo ""
+echo "=== 7. 推送 develop ==="
 git push origin develop
 
 echo ""
-echo "✅ 合并完成！develop 已同步上游最新代码。"
+echo "✅ 合并完成！develop 已同步上游最新代码，自定义补丁已重新应用。"

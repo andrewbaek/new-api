@@ -16,9 +16,25 @@
     <meta name="theme-color" content="#fff" />
     <!--umami-->
     <!--Google Analytics-->
+    <!-- CUSTOM:THEME-OVERLAY:BEGIN — managed by custom/scripts/apply-patches.sh, do not remove -->
+    <link rel="stylesheet" href="/custom-theme.css" id="custom-theme-overlay" />
+    <!-- CUSTOM:THEME-OVERLAY:END -->
   </head>
 
   <body>
     <div id="root"></div>
+    <!-- CUSTOM:THEME-OVERLAY-REORDER:BEGIN — managed by custom/scripts/apply-patches.sh, do not remove -->
+    <script>
+      // Rsbuild appends bundled CSS at end of <head> at build time, which would
+      // cascade-beat any static <link> placed earlier. Move our overlay link to
+      // the end of <head> after initial parse so it always wins.
+      (function () {
+        var l = document.getElementById('custom-theme-overlay');
+        if (l && l.parentNode === document.head) {
+          document.head.appendChild(l);
+        }
+      })();
+    </script>
+    <!-- CUSTOM:THEME-OVERLAY-REORDER:END -->
   </body>
 </html>

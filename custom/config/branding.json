@@ -1,15 +1,15 @@
 {
-  "site_name": "中转站名称",
-  "site_description": "稳定可靠的 AI API 服务",
+  "site_name": "象汇 API",
+  "site_description": "汇聚万象，智连未来 — 稳定可靠的 AI API 聚合服务平台",
   "logo_path": "/brand/logo.svg",
   "favicon_path": "/brand/favicon.ico",
-  "primary_color": "#1677ff",
-  "footer_text": "© 2026 你的公司. All rights reserved.",
-  "support_url": "https://your-support.xxxx.com",
+  "primary_color": "#4285F4",
+  "footer_text": "© 2026 灰象网络科技有限公司 All rights reserved.",
+  "support_url": "https://support.example.com",
   "custom_pages": {
     "about": "/about",
     "pricing": "/pricing",
-    "terms": "/terms"
+    "terms": "/user-agreement"
   },
   "features": {
     "show_register": true,

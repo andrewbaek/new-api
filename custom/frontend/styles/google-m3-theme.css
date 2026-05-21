@@ -1,0 +1,494 @@
+/* ============================================================
+ * Google Material Design 3 Theme Overlay
+ *
+ * Custom branding theme for 象汇 API — applies Google's Material You
+ * design language on top of the upstream design tokens.
+ *
+ * Loaded as a static asset via /custom-theme.css (served from
+ * web/default/public/ as a symlink to this file). Loads AFTER
+ * upstream styles so cascade lets it win without !important
+ * (kept only on a small number of compound-specificity overrides).
+ *
+ * Design principles:
+ *   - Long-termism: monochrome chrome + one expressive primary
+ *   - Minimalism: generous whitespace, restrained color, single accent
+ *   - Accuracy: M3 tonal palette mapped to upstream token slots
+ *   - Core value: actions, data, and brand identity always foregrounded
+ * ============================================================ */
+
+/* Fonts — Google Sans (via Inter / Roboto fallback chain).
+   Google Sans is not openly distributed; Inter is the closest open match
+   and what Google itself uses for many product surfaces. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* ── M3 tonal palette ─────────────────────────────────────── */
+:root {
+  /* Brand tonal palette — Google Blue (#4285F4) base */
+  --m3-primary: oklch(0.62 0.184 263);          /* #4285F4 */
+  --m3-primary-hover: oklch(0.58 0.184 263);    /* #1A73E8 */
+  --m3-primary-pressed: oklch(0.52 0.18 263);   /* #1967D2 */
+  --m3-primary-container: oklch(0.94 0.04 263); /* light blue surface */
+  --m3-on-primary: oklch(1 0 0);
+
+  /* Surface tones — neutral gray with hint of blue */
+  --m3-surface: oklch(1 0 0);
+  --m3-surface-1: oklch(0.985 0.002 263);
+  --m3-surface-2: oklch(0.975 0.003 263);
+  --m3-surface-3: oklch(0.965 0.004 263);
+  --m3-surface-variant: oklch(0.945 0.006 263);
+
+  /* Outline / divider */
+  --m3-outline: oklch(0.86 0.008 263);
+  --m3-outline-variant: oklch(0.92 0.005 263);
+
+  /* Text */
+  --m3-on-surface: oklch(0.21 0.012 263);
+  --m3-on-surface-variant: oklch(0.46 0.012 263);
+
+  /* M3 elevation shadows — soft, layered, Google-style */
+  --m3-elevation-1:
+    0 1px 2px 0 rgba(60, 64, 67, 0.10),
+    0 1px 3px 1px rgba(60, 64, 67, 0.05);
+  --m3-elevation-2:
+    0 1px 2px 0 rgba(60, 64, 67, 0.10),
+    0 2px 6px 2px rgba(60, 64, 67, 0.08);
+  --m3-elevation-3:
+    0 1px 3px 0 rgba(60, 64, 67, 0.10),
+    0 4px 8px 3px rgba(60, 64, 67, 0.06);
+  --m3-elevation-4:
+    0 2px 3px 0 rgba(60, 64, 67, 0.12),
+    0 6px 10px 4px rgba(60, 64, 67, 0.06);
+
+  /* ── Override upstream token slots ── */
+  --background: var(--m3-surface);
+  --foreground: var(--m3-on-surface);
+
+  --card: var(--m3-surface);
+  --card-foreground: var(--m3-on-surface);
+
+  --popover: var(--m3-surface);
+  --popover-foreground: var(--m3-on-surface);
+
+  --primary: var(--m3-primary);
+  --primary-foreground: var(--m3-on-primary);
+
+  --secondary: var(--m3-surface-variant);
+  --secondary-foreground: var(--m3-on-surface);
+
+  --muted: var(--m3-surface-2);
+  --muted-foreground: var(--m3-on-surface-variant);
+
+  --accent: var(--m3-primary-container);
+  --accent-foreground: oklch(0.32 0.13 263);
+
+  --destructive: oklch(0.54 0.21 27);            /* M3 error */
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.59 0.14 152);               /* M3 tertiary green */
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.74 0.17 70);                /* M3 amber */
+  --warning-foreground: oklch(0.21 0.012 263);
+  --info: var(--m3-primary);
+  --info-foreground: oklch(1 0 0);
+
+  --border: var(--m3-outline-variant);
+  --input: var(--m3-outline-variant);
+  --ring: var(--m3-primary);
+
+  /* Chart palette — Google's data-vis colors */
+  --chart-1: oklch(0.62 0.184 263);              /* Google Blue   */
+  --chart-2: oklch(0.66 0.155 152);              /* Google Green  */
+  --chart-3: oklch(0.74 0.17 70);                /* Google Yellow */
+  --chart-4: oklch(0.62 0.22 27);                /* Google Red    */
+  --chart-5: oklch(0.55 0.18 320);               /* Google Purple */
+
+  /* Sidebar — slightly tinted surface */
+  --sidebar: oklch(0.978 0.005 263);
+  --sidebar-foreground: var(--m3-on-surface);
+  --sidebar-primary: var(--m3-primary);
+  --sidebar-primary-foreground: var(--m3-on-primary);
+  --sidebar-accent: var(--m3-primary-container);
+  --sidebar-accent-foreground: oklch(0.32 0.13 263);
+  --sidebar-border: var(--m3-outline-variant);
+  --sidebar-ring: var(--m3-primary);
+
+  /* M3 uses generous, friendly rounding */
+  --radius: 0.875rem;          /* 14px — between md (12) and lg (16) */
+  --app-header-height: 64px;   /* M3 standard app bar height */
+
+  --skeleton-base: var(--m3-surface-2);
+  --skeleton-highlight: var(--m3-surface);
+}
+
+/* ── Dark theme — M3 dark palette ─────────────────────────── */
+.dark {
+  --m3-primary: oklch(0.78 0.13 263);           /* light blue for dark BG */
+  --m3-primary-hover: oklch(0.82 0.13 263);
+  --m3-primary-pressed: oklch(0.86 0.10 263);
+  --m3-primary-container: oklch(0.32 0.13 263);
+  --m3-on-primary: oklch(0.18 0.04 263);
+
+  --m3-surface: oklch(0.165 0.008 263);
+  --m3-surface-1: oklch(0.195 0.008 263);
+  --m3-surface-2: oklch(0.225 0.009 263);
+  --m3-surface-3: oklch(0.255 0.009 263);
+  --m3-surface-variant: oklch(0.275 0.012 263);
+
+  --m3-outline: oklch(0.46 0.012 263);
+  --m3-outline-variant: oklch(0.32 0.012 263);
+
+  --m3-on-surface: oklch(0.94 0.006 263);
+  --m3-on-surface-variant: oklch(0.74 0.012 263);
+
+  --m3-elevation-1:
+    0 1px 2px 0 rgba(0, 0, 0, 0.30),
+    0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --m3-elevation-2:
+    0 1px 2px 0 rgba(0, 0, 0, 0.30),
+    0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --m3-elevation-3:
+    0 1px 3px 0 rgba(0, 0, 0, 0.30),
+    0 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --m3-elevation-4:
+    0 2px 3px 0 rgba(0, 0, 0, 0.30),
+    0 6px 10px 4px rgba(0, 0, 0, 0.15);
+
+  --background: var(--m3-surface);
+  --foreground: var(--m3-on-surface);
+
+  --card: var(--m3-surface-1);
+  --card-foreground: var(--m3-on-surface);
+
+  --popover: var(--m3-surface-2);
+  --popover-foreground: var(--m3-on-surface);
+
+  --primary: var(--m3-primary);
+  --primary-foreground: var(--m3-on-primary);
+
+  --secondary: var(--m3-surface-2);
+  --secondary-foreground: var(--m3-on-surface);
+
+  --muted: var(--m3-surface-1);
+  --muted-foreground: var(--m3-on-surface-variant);
+
+  --accent: var(--m3-primary-container);
+  --accent-foreground: oklch(0.92 0.04 263);
+
+  --destructive: oklch(0.7 0.19 27);
+  --destructive-foreground: oklch(0.18 0.04 27);
+  --success: oklch(0.72 0.17 152);
+  --success-foreground: oklch(0.18 0.04 152);
+  --warning: oklch(0.82 0.17 70);
+  --warning-foreground: oklch(0.18 0.04 70);
+  --info: var(--m3-primary);
+  --info-foreground: var(--m3-on-primary);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: var(--m3-primary);
+
+  --chart-1: oklch(0.78 0.13 263);
+  --chart-2: oklch(0.74 0.14 152);
+  --chart-3: oklch(0.82 0.17 70);
+  --chart-4: oklch(0.72 0.20 27);
+  --chart-5: oklch(0.66 0.18 320);
+
+  --sidebar: oklch(0.13 0.008 263);
+  --sidebar-foreground: var(--m3-on-surface);
+  --sidebar-primary: var(--m3-primary);
+  --sidebar-primary-foreground: var(--m3-on-primary);
+  --sidebar-accent: var(--m3-surface-2);
+  --sidebar-accent-foreground: var(--m3-on-surface);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--m3-primary);
+
+  --skeleton-base: var(--m3-surface-2);
+  --skeleton-highlight: var(--m3-surface-3);
+}
+
+/* ── Typography — Google Sans / Inter / Roboto stack ───────── */
+html,
+body {
+  font-family:
+    'Google Sans', 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont,
+    'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.005em;
+}
+
+code,
+kbd,
+pre,
+samp,
+.font-mono {
+  font-family: 'Roboto Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular,
+    Menlo, Monaco, Consolas, monospace !important;
+}
+
+/* M3-style headings — slightly tighter, more confident */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+/* ── Button — M3 filled / tonal / text variants ───────────── */
+[data-slot='button'] {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 624.9375rem;       /* M3 buttons are pill-shaped */
+  transition:
+    background-color 180ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 180ms cubic-bezier(0.2, 0, 0, 1),
+    transform 120ms ease;
+}
+
+/* Filled button — primary action surface */
+[data-slot='button'][data-variant='default'],
+[data-slot='button'].bg-primary {
+  box-shadow: var(--m3-elevation-1);
+}
+[data-slot='button'][data-variant='default']:hover,
+[data-slot='button'].bg-primary:hover {
+  background-color: var(--m3-primary-hover);
+  box-shadow: var(--m3-elevation-2);
+}
+[data-slot='button'][data-variant='default']:active,
+[data-slot='button'].bg-primary:active {
+  background-color: var(--m3-primary-pressed);
+  box-shadow: var(--m3-elevation-1);
+}
+
+/* Outline button — M3 outlined */
+[data-slot='button'][data-variant='outline'] {
+  border-color: var(--m3-outline);
+  background: transparent;
+}
+[data-slot='button'][data-variant='outline']:hover {
+  background-color: color-mix(in oklch, var(--m3-primary) 8%, transparent);
+  border-color: var(--m3-primary);
+  color: var(--m3-primary);
+}
+
+/* Ghost / text button — M3 text */
+[data-slot='button'][data-variant='ghost']:hover {
+  background-color: color-mix(in oklch, var(--m3-primary) 8%, transparent);
+}
+
+/* ── Cards — M3 elevated / filled ──────────────────────────── */
+[data-slot='card'] {
+  border-radius: 1rem;              /* 16px — M3 large card */
+  border-color: var(--m3-outline-variant);
+  box-shadow: var(--m3-elevation-1);
+  transition:
+    box-shadow 200ms cubic-bezier(0.2, 0, 0, 1),
+    transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+@media (min-width: 641px) {
+  [data-slot='card']:hover {
+    box-shadow: var(--m3-elevation-2);
+    transform: translateY(-1px);
+  }
+}
+.dark [data-slot='card'] {
+  background-color: var(--m3-surface-1);
+  border-color: oklch(1 0 0 / 8%);
+}
+
+/* ── Inputs — M3 filled text field ─────────────────────────── */
+[data-slot='input'],
+[data-slot='textarea'],
+[data-slot='select-trigger'] {
+  border-radius: 0.5rem;
+  background-color: var(--m3-surface-2);
+  border-color: var(--m3-outline-variant);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+[data-slot='input']:focus-visible,
+[data-slot='textarea']:focus-visible,
+[data-slot='select-trigger']:focus-visible {
+  border-color: var(--m3-primary);
+  box-shadow: 0 0 0 1px var(--m3-primary);
+  background-color: var(--m3-surface);
+}
+.dark [data-slot='input'],
+.dark [data-slot='textarea'],
+.dark [data-slot='select-trigger'] {
+  background-color: oklch(1 0 0 / 6%);
+}
+
+/* ── Header — M3 app bar (统一高度和样式) ──────────────────── */
+header[class*='sticky'],
+[data-slot='header'] {
+  height: 64px !important;
+  --app-header-height: 64px !important;
+  background: var(--m3-surface) !important;
+  border-bottom: 1px solid var(--m3-outline-variant);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Scrolled state — add elevation */
+header[class*='scrolled'],
+header[data-scrolled='true'] {
+  box-shadow: var(--m3-elevation-2);
+}
+
+/* Header inner container */
+header > div {
+  height: 100%;
+  max-width: 100%;
+  padding: 0 16px;
+}
+
+/* Public header specific adjustments */
+header[class*='border-b'] {
+  border-bottom: 1px solid var(--m3-outline-variant) !important;
+}
+
+/* Logo/brand area */
+[class*='header-logo'],
+[class*='system-brand'] {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Navigation links in header */
+header nav a,
+header [role='navigation'] a {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: color 180ms ease;
+}
+
+header nav a:hover,
+header [role='navigation'] a:hover {
+  color: var(--m3-primary);
+}
+
+/* Header buttons */
+header button {
+  font-weight: 500;
+}
+
+/* ── Sidebar — M3 navigation rail ──────────────────────────── */
+[data-slot='sidebar'],
+[data-slot='sidebar-menu'] {
+  font-weight: 500;
+}
+[data-slot='sidebar-menu-button'] {
+  border-radius: 624.9375rem;       /* pill-shaped nav items */
+  margin: 2px 8px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-weight: 500;
+  transition: background-color 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+[data-slot='sidebar-menu-button'][data-active='true'],
+[data-slot='sidebar-menu-button'].bg-sidebar-accent {
+  background-color: var(--m3-primary-container);
+  color: oklch(0.32 0.13 263);
+}
+.dark [data-slot='sidebar-menu-button'][data-active='true'],
+.dark [data-slot='sidebar-menu-button'].bg-sidebar-accent {
+  background-color: var(--m3-primary-container);
+  color: var(--m3-on-surface);
+}
+[data-slot='sidebar-menu-button']:hover {
+  background-color: color-mix(in oklch, var(--m3-primary) 8%, transparent);
+}
+
+/* ── Tables — M3 data table ───────────────────────────────── */
+[data-slot='table'] {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+[data-slot='table'] thead {
+  background-color: var(--m3-surface-1);
+}
+[data-slot='table'] thead th {
+  font-weight: 500;
+  color: var(--m3-on-surface-variant);
+  letter-spacing: 0.02em;
+}
+[data-slot='table'] tbody tr {
+  transition: background-color 120ms ease;
+}
+[data-slot='table'] tbody tr:hover {
+  background-color: color-mix(in oklch, var(--m3-primary) 5%, transparent);
+}
+
+/* ── Dialogs / Sheets — M3 modal ──────────────────────────── */
+[data-slot='dialog-content'],
+[data-slot='sheet-content'] {
+  border-radius: 1.75rem;           /* 28px — M3 modal */
+  border: none;
+  box-shadow: var(--m3-elevation-4);
+}
+
+/* ── Badges — M3 chips ────────────────────────────────────── */
+[data-slot='badge'] {
+  border-radius: 624.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* ── Tabs — M3 tabs with sliding indicator ─────────────────── */
+[data-slot='tabs-list'] {
+  background-color: var(--m3-surface-1);
+  border-radius: 624.9375rem;
+  padding: 4px;
+}
+[data-slot='tabs-trigger'] {
+  border-radius: 624.9375rem;
+  font-weight: 500;
+  transition:
+    background-color 200ms cubic-bezier(0.2, 0, 0, 1),
+    color 200ms ease;
+}
+[data-slot='tabs-trigger'][data-state='active'] {
+  background-color: var(--m3-surface);
+  color: var(--m3-primary);
+  box-shadow: var(--m3-elevation-1);
+}
+
+/* ── Scrollbar — M3 minimal ───────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--m3-outline-variant) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--m3-outline-variant);
+  border-radius: 624.9375rem;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--m3-outline);
+}
+
+/* ── Selection — Google Blue tint ──────────────────────────── */
+::selection {
+  background-color: color-mix(in oklch, var(--m3-primary) 28%, transparent);
+  color: var(--m3-on-surface);
+}
+
+/* ── Focus ring — Google accessibility ─────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--m3-primary);
+  outline-offset: 2px;
+}
+
+/* ── Reduced motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot='button'],
+  [data-slot='card'],
+  [data-slot='sidebar-menu-button'],
+  [data-slot='tabs-trigger'] {
+    transition: none;
+  }
+}
