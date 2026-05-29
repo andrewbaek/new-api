@@ -16,13 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useTranslation } from 'react-i18next'
 import { Link } from '@tanstack/react-router'
 import { PublicLayout } from '@/components/layout'
 
 export function Docs() {
-  const { t } = useTranslation()
-
   return (
     <PublicLayout>
       <div className="docs-container">
