@@ -1,0 +1,18 @@
+# Ubuntu 24.04 LTS (noble) - 腾讯云内网镜像源
+# 用法：setup-server-cn.sh 会自动把它写入 /etc/apt/sources.list.d/tencentyun.sources
+# 注意：Ubuntu 24.04 默认使用 DEB822 格式的 .sources 文件，而非旧的 sources.list
+#
+# 腾讯云轻量应用服务器使用 mirrors.tencentyun.com 走内网，免流量费且速度极快
+# 公网环境（其他云）请改成 mirrors.tencent.com
+
+Types: deb
+URIs: http://mirrors.tencentyun.com/ubuntu/
+Suites: noble noble-updates noble-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: http://mirrors.tencentyun.com/ubuntu/
+Suites: noble-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg

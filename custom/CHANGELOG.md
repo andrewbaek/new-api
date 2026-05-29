@@ -1,5 +1,51 @@
 # Custom Changelog
 
+## [v0.0.3-elephant-1] - 2026-05-21
+
+### 中国服务器自动化部署（方案 A：本机构建 + 镜像传输）
+- 新增 `custom/scripts/setup-server-cn.sh`：腾讯云轻量服务器一次性初始化
+  - 切换 apt 到 `mirrors.tencentyun.com` 内网源
+  - 用腾讯云源安装 Docker CE + Buildx + Compose
+  - 写入 `daemon.json` 配 registry-mirrors 多源（mirror.ccs.tencentyun.com + 1ms.run + daocloud + dockerproxy）
+  - 配置 UFW 防火墙（22/80/443）
+  - 创建 `/opt/new-api/{data,logs,images,backup,config}` 目录树
+  - 生成 `.env.production` 含强随机密钥
+- 新增 `custom/build/Dockerfile.cn`：中国网络优化的 Dockerfile
+  - bun 用 `registry.npmmirror.com`
+  - go 用 `goproxy.cn`
+  - alpine/debian apk/apt 用清华源
+- 新增 `custom/scripts/build-image.sh`：本机构建并打 tar 包
+  - linux/amd64 buildx
+  - 自动调用 apply-patches.sh
+  - 输出到 `dist/xiang-api-<git-sha>.tar.gz` + meta.json
+- 新增 `custom/scripts/deploy-cn.sh`：主部署入口
+  - 读 `.env.deploy` 配置
+  - 调 build → rsync 镜像 + compose + 安装脚本 → SSH 触发
+- 新增 `custom/scripts/install-on-server.sh`：服务器端安装
+  - 自动 pg_dump 备份
+  - docker load + compose up
+  - 健康检查失败自动回滚到上一版本
+  - 清理 7 天前镜像和 14 天前备份
+- 新增 `docker-compose.production.image.yml`：image 版 compose
+  - 用 `image: xiang-api:${IMAGE_TAG}` 替代 `build:`
+  - 资源限制针对 2C4G 调优（new-api 1G / postgres 768M / redis 192M）
+  - PostgreSQL 参数针对小内存重新计算
+- 新增 `custom/config/sources.list.noble`：Ubuntu 24.04 腾讯云内网源
+- 新增 `custom/config/daemon.json`：Docker 镜像加速配置
+- 修改 `custom/config/nginx.conf`：
+  - SSL 证书改用手动路径 `/etc/ssl/new-api/`（去 certbot 依赖）
+  - 不依赖 `/etc/nginx/proxy_params`（24.04 不再默认提供）
+  - 流式响应超时延长到 600s
+- 新增 `.env.deploy.example`：部署配置模板（HOST/USER/PORT/REMOTE_DIR）
+- 更新 `.gitignore`：忽略 `dist/`、`.env.deploy`、`.env.production`、镜像 tar 包
+- 重写 `custom/docs/DEPLOYMENT.md`：China Edition 方案 A 完整工作流
+
+### 设计原则
+- **服务器零外网依赖**：除 apt 走腾讯云内网外，不需要访问 GitHub / Docker Hub / Go Proxy
+- **上游跟随友好**：所有改动都在 `custom/` 下，不动上游 Dockerfile（用 `Dockerfile.cn` 副本）
+- **失败自愈**：健康检查 + 自动回滚 + 备份保留
+- **资源约束友好**：2C4G 轻量机型可稳定运行
+
 ## [v0.0.2-elephant-1] - 2026-05-21
 
 ### UI 主题：Google Material Design 3

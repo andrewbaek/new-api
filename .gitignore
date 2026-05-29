@@ -6,6 +6,7 @@ upload
 *.exe
 *.db
 build
+!custom/build/
 *.db-journal
 logs
 web/default/dist
@@ -35,3 +36,11 @@ data/
 .test
 token_estimator_test.go
 skills-lock.json
+
+dist/
+.env.deploy
+.env.production
+/new-api.tar.gz
+/new-api-full.tar.gz
+new-api-*.tar
+new-api-*.tar.gz

@@ -1,0 +1,98 @@
+# ============================================================
+# Dockerfile.cn — 中国网络环境优化版（仅本地构建用）
+#
+# 与上游 ./Dockerfile 的差异：
+#   1. bun install 走 https://registry.npmmirror.com
+#   2. go mod download 走 https://goproxy.cn
+#   3. debian runtime stage 走清华大学 debian 镜像
+#   4. 不锁基础镜像 digest（方便切换 mirror，且本地构建已能验签）
+#
+# 用法：
+#   docker buildx build --platform linux/amd64 \
+#       -f custom/build/Dockerfile.cn \
+#       -t xiang-api:<tag> .
+#
+# 上游更新 Dockerfile 时只需 diff 这两个文件，按需同步即可
+# ============================================================
+
+# ─────────────────────────────────────────────────────────────
+# Stage 1: 默认前端构建
+# ─────────────────────────────────────────────────────────────
+FROM oven/bun:1 AS builder
+
+# 中国镜像加速
+ENV BUN_CONFIG_REGISTRY=https://registry.npmmirror.com \
+    npm_config_registry=https://registry.npmmirror.com
+
+WORKDIR /build
+COPY web/default/package.json .
+COPY web/default/bun.lock .
+RUN bun install
+COPY ./web/default .
+COPY ./VERSION .
+RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat VERSION) bun run build
+
+# ─────────────────────────────────────────────────────────────
+# Stage 2: classic 前端构建
+# ─────────────────────────────────────────────────────────────
+FROM oven/bun:1 AS builder-classic
+
+ENV BUN_CONFIG_REGISTRY=https://registry.npmmirror.com \
+    npm_config_registry=https://registry.npmmirror.com
+
+WORKDIR /build
+COPY web/classic/package.json .
+COPY web/classic/bun.lock .
+RUN bun install
+COPY ./web/classic .
+COPY ./VERSION .
+RUN VITE_REACT_APP_VERSION=$(cat VERSION) bun run build
+
+# ─────────────────────────────────────────────────────────────
+# Stage 3: Go 后端构建
+# ─────────────────────────────────────────────────────────────
+FROM golang:1.26.1-alpine AS builder2
+ENV GO111MODULE=on CGO_ENABLED=0
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GOSUMDB=sum.golang.google.cn
+
+ARG TARGETOS
+ARG TARGETARCH
+ENV GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64}
+ENV GOEXPERIMENT=greenteagc
+
+# alpine 包管理走清华源
+RUN sed -i 's|dl-cdn.alpinelinux.org|mirrors.tuna.tsinghua.edu.cn|g' /etc/apk/repositories || true
+
+WORKDIR /build
+
+ADD go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+COPY --from=builder /build/dist ./web/default/dist
+COPY --from=builder-classic /build/dist ./web/classic/dist
+RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api
+
+# ─────────────────────────────────────────────────────────────
+# Stage 4: 运行时
+# ─────────────────────────────────────────────────────────────
+FROM debian:bookworm-slim
+
+# debian apt 走清华源
+RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm main contrib non-free non-free-firmware" > /etc/apt/sources.list \
+ && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list \
+ && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security bookworm-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata libasan8 wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
+
+COPY --from=builder2 /build/new-api /
+COPY LICENSE NOTICE THIRD-PARTY-LICENSES.md /licenses/
+
+ENV TZ=Asia/Shanghai
+EXPOSE 3000
+WORKDIR /data
+ENTRYPOINT ["/new-api"]
