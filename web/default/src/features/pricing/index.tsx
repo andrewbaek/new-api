@@ -29,6 +29,7 @@ import {
   PricingToolbar,
   ModelCardGrid,
   ModelDetailsDrawer,
+  PriceCalculator,
 } from './components'
 import { EXCLUDED_GROUPS, VIEW_MODES } from './constants'
 import { useFilters } from './hooks/use-filters'
@@ -200,6 +201,14 @@ export function Pricing() {
               className='mx-auto mt-4 max-w-2xl sm:mt-6'
             />
           </header>
+
+          <PriceCalculator
+            models={models || []}
+            priceRate={priceRate ?? 1}
+            usdExchangeRate={usdExchangeRate ?? 1}
+            tokenUnit={tokenUnit}
+            className='mx-auto mb-5 w-full max-w-[1800px]'
+          />
 
           <div className='grid gap-4 xl:grid-cols-[330px_minmax(0,1fr)]'>
             <PricingSidebar
