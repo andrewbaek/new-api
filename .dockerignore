@@ -9,4 +9,13 @@ docs
 .gocache
 **/node_modules
 **/dist
+.env
+.env.*
+*.db
+data
+dist
+logs
+upload
+new-api*.tar
+new-api*.tar.gz
 !THIRD-PARTY-LICENSES.md

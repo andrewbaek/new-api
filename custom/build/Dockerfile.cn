@@ -28,6 +28,7 @@ WORKDIR /build/web
 COPY web/package.json web/bun.lock ./
 RUN bun install --frozen-lockfile
 COPY ./web ./
+COPY ./custom/frontend/styles/google-m3-theme.css /build/custom/frontend/styles/google-m3-theme.css
 COPY ./VERSION /build/VERSION
 RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat /build/VERSION) bun run build
 
