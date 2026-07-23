@@ -16,7 +16,7 @@
 # ============================================================
 
 # ─────────────────────────────────────────────────────────────
-# Stage 1: 默认前端构建
+# Stage 1: 前端构建
 # ─────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS builder
 
@@ -24,32 +24,15 @@ FROM oven/bun:1 AS builder
 ENV BUN_CONFIG_REGISTRY=https://registry.npmmirror.com \
     npm_config_registry=https://registry.npmmirror.com
 
-WORKDIR /build
-COPY web/default/package.json .
-COPY web/default/bun.lock .
-RUN bun install
-COPY ./web/default .
-COPY ./VERSION .
-RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat VERSION) bun run build
+WORKDIR /build/web
+COPY web/package.json web/bun.lock ./
+RUN bun install --frozen-lockfile
+COPY ./web ./
+COPY ./VERSION /build/VERSION
+RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat /build/VERSION) bun run build
 
 # ─────────────────────────────────────────────────────────────
-# Stage 2: classic 前端构建
-# ─────────────────────────────────────────────────────────────
-FROM oven/bun:1 AS builder-classic
-
-ENV BUN_CONFIG_REGISTRY=https://registry.npmmirror.com \
-    npm_config_registry=https://registry.npmmirror.com
-
-WORKDIR /build
-COPY web/classic/package.json .
-COPY web/classic/bun.lock .
-RUN bun install
-COPY ./web/classic .
-COPY ./VERSION .
-RUN VITE_REACT_APP_VERSION=$(cat VERSION) bun run build
-
-# ─────────────────────────────────────────────────────────────
-# Stage 3: Go 后端构建
+# Stage 2: Go 后端构建
 # ─────────────────────────────────────────────────────────────
 FROM golang:1.26.1-alpine AS builder2
 ENV GO111MODULE=on CGO_ENABLED=0
@@ -70,12 +53,11 @@ ADD go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-COPY --from=builder /build/dist ./web/default/dist
-COPY --from=builder-classic /build/dist ./web/classic/dist
+COPY --from=builder /build/web/dist ./web/dist
 RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api
 
 # ─────────────────────────────────────────────────────────────
-# Stage 4: 运行时
+# Stage 3: 运行时
 # ─────────────────────────────────────────────────────────────
 FROM debian:bookworm-slim
 

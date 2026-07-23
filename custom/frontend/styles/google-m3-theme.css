@@ -5,7 +5,7 @@
  * design language on top of the upstream design tokens.
  *
  * Loaded as a static asset via /custom-theme.css (served from
- * web/default/public/ as a symlink to this file). Loads AFTER
+ * web/public/ as a symlink to this file). Loads AFTER
  * upstream styles so cascade lets it win without !important
  * (kept only on a small number of compound-specificity overrides).
  *

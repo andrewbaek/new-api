@@ -39,8 +39,8 @@ echo "=== 5. 运行测试 ==="
 
 echo ""
 echo "=== 6. 提交补丁更改（如有）==="
-if [ -n "$(git status --porcelain web/default/index.html web/default/public/custom-theme.css 2>/dev/null)" ]; then
-  git add web/default/index.html web/default/public/custom-theme.css
+if [ -n "$(git status --porcelain web/index.html web/public/custom-theme.css 2>/dev/null)" ]; then
+  git add web/index.html web/public/custom-theme.css
   git commit -m "chore(custom): re-apply theme overlay patches after upstream merge"
 fi
 

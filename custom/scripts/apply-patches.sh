@@ -4,11 +4,11 @@
 #
 # 何时运行：
 #   - `bash custom/scripts/merge-upstream.sh` 之后（自动调用）
-#   - 任何时候 web/default/index.html 被上游覆盖后
+#   - 任何时候 web/index.html 被上游覆盖后
 #
 # 当前补丁清单：
-#   1. web/default/index.html  注入 <link href="/custom-theme.css">
-#   2. web/default/public/custom-theme.css  symlink 到 custom/frontend/styles/google-m3-theme.css
+#   1. web/index.html  注入 <link href="/custom-theme.css">
+#   2. web/public/custom-theme.css  symlink 到 custom/frontend/styles/google-m3-theme.css
 #
 # 设计原则：
 #   - 幂等：重复运行不会重复注入
@@ -21,16 +21,16 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 echo "=== 1. 同步 custom-theme.css 软链接 ==="
-mkdir -p web/default/public
-if [ -L web/default/public/custom-theme.css ] || [ -e web/default/public/custom-theme.css ]; then
-  rm -f web/default/public/custom-theme.css
+mkdir -p web/public
+if [ -L web/public/custom-theme.css ] || [ -e web/public/custom-theme.css ]; then
+  rm -f web/public/custom-theme.css
 fi
-ln -s ../../../custom/frontend/styles/google-m3-theme.css web/default/public/custom-theme.css
-echo "✅ web/default/public/custom-theme.css → custom/frontend/styles/google-m3-theme.css"
+ln -s ../../custom/frontend/styles/google-m3-theme.css web/public/custom-theme.css
+echo "✅ web/public/custom-theme.css → custom/frontend/styles/google-m3-theme.css"
 
 echo ""
 echo "=== 2. 注入 index.html <link> 标签 ==="
-INDEX_HTML="web/default/index.html"
+INDEX_HTML="web/index.html"
 if grep -q "CUSTOM:THEME-OVERLAY:BEGIN" "$INDEX_HTML"; then
   echo "✅ index.html 已存在主题 link 补丁，跳过"
 else
